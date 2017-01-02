@@ -54,7 +54,6 @@ function image_row(data) { // Prototype function
 image_row.prototype = { // Prototype method for building image rows
     init_row: function() {
         var _this = this;
-        console.log(_this.data);
         $('tbody.files').append(
             $('<tr>', {id: 'image-row-' + _this.data.ID, class: 'image-link image-handle template-download fade in ui-sortable-handle', css: {'cursor' : 'move'}}).append(
                 $('<td>').append(
@@ -77,21 +76,24 @@ image_row.prototype = { // Prototype method for building image rows
                         $('<i>', {class: 'glyphicon glyphicon-trash'}),
                         $('<span>', {text: 'Delete'})
                     ).on('click', function() {
-                        $.ajax({
-                            url  : 'server/php/reorder.php',
-                            type : 'POST',
-                            data: {
-                                QueryType: 'delete',
-                                ID: _this.data.ID
-                            },
-                            success: function(d) {
-                                location.reload(); 
-                            }
-                        })                        
+                        _this.delete_row(_this.data.ID)                      
                     }),
                     $('<input>', {class: 'toggle', name: 'delete', value: '1', type: 'checkbox', css: {'margin-left': '5px'}})
                 )
             )
         )
+    },
+    delete_row: function(id) {
+        $.ajax({
+            url  : 'server/php/reorder.php',
+            type : 'POST',
+            data: {
+                QueryType: 'delete',
+                ID: id
+            },
+            success: function(d) {
+                location.reload(); 
+            }
+        })         
     }
 }
