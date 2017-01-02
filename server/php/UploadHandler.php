@@ -10,7 +10,7 @@
  * http://www.opensource.org/licenses/MIT
  */
 
-class UploadHandler
+class UploadHandler extends DatabaseHandler
 {
 
     protected $options;
@@ -1250,6 +1250,7 @@ class UploadHandler
     }
 
     public function generate_response($content, $print_response = true) {
+
         $this->response = $content;
         if ($print_response) {
             $json = json_encode($content);
@@ -1326,6 +1327,7 @@ class UploadHandler
             preg_split('/[^0-9]+/', $content_range_header) : null;
         $size =  $content_range ? $content_range[3] : null;
         $files = array();
+        $db_post = array();
         if ($upload) {
             if (is_array($upload['tmp_name'])) {
                 // param_name is an array identifier like "files[]",
@@ -1340,6 +1342,12 @@ class UploadHandler
                         $index,
                         $content_range
                     );
+                    // var_dump($files);
+                    // exit;
+                    $db_post['file_name'] = $files[0]->name;  
+                    $db_post['size'] = $files[0]->size;           
+                    $database_handler = new DatabaseHandler();
+                    $database_handler->post_image($db_post);
                 }
             } else {
                 // param_name is a single object identifier like "file",
@@ -1360,6 +1368,7 @@ class UploadHandler
         }
         $response = array($this->options['param_name'] => $files);
         return $this->generate_response($response, $print_response);
+        
     }
 
     public function delete($print_response = true) {
